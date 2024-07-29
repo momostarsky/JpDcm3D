@@ -1,16 +1,8 @@
 cmake_minimum_required(VERSION 3.8...3.12 FATAL_ERROR)
 project(JpDcm3D)
 
-find_package(VTK
-  COMPONENTS
-    CommonCore
-    GUISupportQt
-    IOImage
-    ImagingColor
-    ImagingGeneral
-    InteractionImage
-    InteractionStyle
-    InteractionWidgets)
+find_package(VTK REQUIRED
+  )
 if (NOT VTK_FOUND)
   message("Skipping example: ${VTK_NOT_FOUND_MESSAGE}")
   return ()
@@ -33,7 +25,9 @@ set(Hdrs
   QtVTKRenderWindows.h)
 
 set(UIs
-  QtVTKRenderWindows.ui)
+  QtVTKRenderWindows.ui
+        vtkHelper.cpp
+        vtkHelper.h)
 
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)

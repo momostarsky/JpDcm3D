@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>851</width>
-    <height>583</height>
+    <width>1399</width>
+    <height>865</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>QtVTKRenderWindows</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="Icons/icons.qrc">
     <normaloff>:/Icons/help.png</normaloff>:/Icons/help.png</iconset>
   </property>
   <property name="iconSize">
@@ -28,9 +28,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
-      <width>591</width>
-      <height>531</height>
+      <y>10</y>
+      <width>1141</width>
+      <height>851</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
@@ -51,11 +51,17 @@
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
-      <x>629</x>
-      <y>29</y>
+      <x>1170</x>
+      <y>0</y>
       <width>211</width>
-      <height>531</height>
+      <height>861</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
     </property>
     <property name="frameShape">
      <enum>QFrame::StyledPanel</enum>
@@ -157,7 +163,7 @@
     <widget class="QFrame" name="frame_2">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>20</x>
        <y>260</y>
        <width>211</width>
        <height>211</height>
@@ -172,9 +178,9 @@
      <widget class="QPushButton" name="AddDistance1Button">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>0</x>
         <y>10</y>
-        <width>191</width>
+        <width>171</width>
         <height>21</height>
        </rect>
       </property>
@@ -190,7 +196,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="Icons/icons.qrc">
      <normaloff>:/Icons/fileopen.png</normaloff>:/Icons/fileopen.png</iconset>
    </property>
    <property name="text">
@@ -208,7 +214,7 @@
   </action>
   <action name="actionPrint">
    <property name="icon">
-    <iconset>
+    <iconset resource="Icons/icons.qrc">
      <normaloff>:/Icons/print.png</normaloff>:/Icons/print.png</iconset>
    </property>
    <property name="text">
@@ -217,7 +223,7 @@
   </action>
   <action name="actionHelp">
    <property name="icon">
-    <iconset>
+    <iconset resource="Icons/icons.qrc">
      <normaloff>:/Icons/help.png</normaloff>:/Icons/help.png</iconset>
    </property>
    <property name="text">
@@ -226,7 +232,7 @@
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset>
+    <iconset resource="Icons/icons.qrc">
      <normaloff>:/Icons/filesave.png</normaloff>:/Icons/filesave.png</iconset>
    </property>
    <property name="text">
