@@ -7,8 +7,9 @@
 #include <vtkSmartPointer.h>
 #include "vtkHelper.h"
 #include "vtkMatrix3x3.h"
+#include "vtkStdString.h"
 
-void vtkHelper::PrintRASDirection(const vtkSmartPointer<vtkImageData>& imageData) {
+void vtkHelper::PrintRASDirection(const vtkSmartPointer<vtkImageData> &imageData) {
     auto matrix = imageData->GetDirectionMatrix();
     double *directionData = matrix->GetData();
 
@@ -48,4 +49,8 @@ void vtkHelper::PrintRASDirection(const vtkSmartPointer<vtkImageData>& imageData
         std::cout << "Posterior: Negative Y" << std::endl;
         std::cout << "Inferior: Negative Z" << std::endl;
     }
+}
+
+void vtkHelper::MakeWWWCInfo(double ww, double wc, char *info) {
+    sprintf(info, "WW/WC: %.0f/%.0f\n", ww, wc);
 }

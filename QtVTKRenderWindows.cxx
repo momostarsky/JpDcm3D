@@ -40,6 +40,7 @@
 #include <vtkDICOMItem.h>
 #include <vtkMatrix3x3.h>
 #include <vtkImageFlip.h>
+#include <vtkNamedColors.h>
 
 
 //------------------------------------------------------------------------------
@@ -48,7 +49,7 @@ public:
     static vtkResliceCursorCallback *New() { return new vtkResliceCursorCallback; }
 
     void Execute(vtkObject *caller, unsigned long ev, void *callData) override {
-
+        std::cout << "Execute:" << std::endl;
         if (ev == vtkResliceCursorWidget::WindowLevelEvent || ev == vtkCommand::WindowLevelEvent ||
             ev == vtkResliceCursorWidget::ResliceThicknessChangedEvent) {
             // Render everything
@@ -56,11 +57,18 @@ public:
                 i->Render();
             }
             this->IPW[0]->GetInteractor()->GetRenderWindow()->Render();
+            std::cout << "return" << std::endl;
             return;
         }
+        std::cout << "Execute With Caller:" << caller->GetObjectName() << ",With ClassName :" << caller->GetClassName()
+                  << std::endl;
 
         auto *ipw = dynamic_cast<vtkImagePlaneWidget *>(caller);
+
+
         if (ipw) {
+            std::cout << "SliceIndex:" << ipw->GetSliceIndex() << std::endl;
+
             auto *wl = static_cast<double *>(callData);
 
             if (ipw == this->IPW[0]) {
@@ -73,10 +81,13 @@ public:
                 this->IPW[0]->SetWindowLevel(wl[0], wl[1], 1);
                 this->IPW[1]->SetWindowLevel(wl[0], wl[1], 1);
             }
+        } else {
+            std::cout << "Not Execute With Caller: vtkImagePlaneWidget" << std::endl;
         }
 
         auto *rcw = dynamic_cast<vtkResliceCursorWidget *>(caller);
         if (rcw) {
+            std::cout << "GetResliceAxes:" << rcw->GetResliceCursorRepresentation()->GetResliceAxes() << std::endl;
             auto *rep =
                     dynamic_cast<vtkResliceCursorLineRepresentation *>(rcw->GetRepresentation());
             // Although the return value is not used, we keep the get calls
@@ -94,6 +105,8 @@ public:
                 // If the reslice plane has modified, update it on the 3D widget
                 this->IPW[i]->UpdatePlacement();
             }
+        } else {
+            std::cout << "Not Execute With Caller: vtkResliceCursorWidget" << std::endl;
         }
 
         // Render everything
@@ -177,6 +190,11 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
     std::cout << "ImagePositionPatient is :" << ImagePositionPatient << std::endl;
     std::cout << "ImageOrientationPatient is :" << ImageOrientationPatient << std::endl;
 
+    auto patName = meta->Get(DC::PatientName);
+    auto patId = meta->Get(DC::PatientID);
+    auto patAge = meta->Get(DC::PatientAge);
+    auto patDate = meta->Get(DC::PatientBirthDate);
+
 
     vtkSmartPointer<vtkDICOMImageReader> reader = vtkSmartPointer<vtkDICOMImageReader>::New();
     reader->SetDataByteOrderToLittleEndian();
@@ -212,26 +230,99 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
         imageData->GetOrigin(origin);
         imageData->GetSpacing(spacing);
         vtkMatrix3x3 *imageDirection = imageData->GetDirectionMatrix();
+        int extentInfo[6];
+        imageData->GetExtent(extentInfo);
 
         std::cout << "Origin: (" << origin[0] << ", " << origin[1] << ", " << origin[2] << ")" << std::endl;
         std::cout << "Spacing: (" << spacing[0] << ", " << spacing[1] << ", " << spacing[2] << ")" << std::endl;
-        std::cout << "Direction matrix:" << std::endl;
-        imageDirection->Print(std::cout);
-//        for (int i = 0; i < 3; ++i)
-//        {
-//            for (int j = 0; j < 3; ++j)
-//            {
-//                std::cout << imageDirection[i * 3 + j] << " ";
-//            }
-//            std::cout << std::endl;
-//        }
-        vtkHelper::PrintRASDirection(imageData);
+        std::cout << "Extent: (" << extentInfo[0] << ", " << extentInfo[1] << ", " << extentInfo[2] << ","
+                  << extentInfo[3] << ", " << extentInfo[4] << ", " << extentInfo[5] << ")" << std::endl;
+
+//        std::cout << "Direction matrix:" << std::endl;
+//        imageDirection->Print(std::cout);
+////        for (int i = 0; i < 3; ++i)
+////        {
+////            for (int j = 0; j < 3; ++j)
+////            {
+////                std::cout << imageDirection[i * 3 + j] << " ";
+////            }
+////            std::cout << std::endl;
+////        }
+//        vtkHelper::PrintRASDirection(imageData);
     }
 
-    for (auto &i: riw) {
-        i = vtkSmartPointer<vtkResliceImageViewer>::New();
-        vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
-        i->SetRenderWindow(renderWindow);
+    for (auto &i: textActor) {
+        i = vtkSmartPointer<vtkTextActor>::New();
+        i->SetDisplayPosition(5, 5);
+        i->GetTextProperty()->SetFontSize(14);
+        i->GetTextProperty()->SetFontFamily(VTK_FONT_FILE);
+
+    }
+
+
+    textActor[0]->SetInput("Saggital");
+    textActor[0]->GetTextProperty()->SetColor(1, 1, 1);
+
+    textActor[1]->SetInput("Cornal");
+    textActor[1]->GetTextProperty()->SetColor(1, 1, 1);
+
+    textActor[2]->SetInput("Axial");
+    textActor[2]->GetTextProperty()->SetColor(1, 1, 1);
+
+
+    vtkStdString pInfoStr;
+    pInfoStr.append("ID:");
+    pInfoStr.append(patId.AsString());
+    pInfoStr.append("\nNAME:");
+    pInfoStr.append(patName.AsString());
+    pInfoStr.append("\nAGE:");
+    pInfoStr.append(patAge.AsString());
+    pInfoStr.append("\nBirthDate:");
+    pInfoStr.append(patDate.AsString());
+
+    // 设置PatientInfo文本
+
+    for (auto &i: pLeftTopTextActor) {
+        i = vtkSmartPointer<vtkTextActor>::New();
+        vtkSmartPointer<vtkTextProperty> textProp = i->GetTextProperty();
+        textProp->SetColor(1.0, 0.0, 0.0);  // 红色
+        textProp->SetFontFamilyToArial();
+        textProp->SetFontSize(18);
+        textProp->SetJustificationToLeft();  // 左对齐
+        textProp->SetVerticalJustificationToTop();  // 顶部对齐
+        i->GetPositionCoordinate()->SetCoordinateSystemToNormalizedViewport();
+        i->GetPositionCoordinate()->SetValue(0.02, 0.98);
+        i->SetInput(pInfoStr.c_str());
+    }
+// WW/WC
+
+    char wwwcStr[64];
+    vtkHelper::MakeWWWCInfo(ww.AsDouble(), wc.AsDouble(), wwwcStr);
+    std::cout <<"WWWC Info :" <<  wwwcStr  << std::endl;
+
+    for (auto &i: pWWWCInfo) {
+        i = vtkSmartPointer<vtkTextActor>::New();
+        vtkSmartPointer<vtkTextProperty> textProp = i->GetTextProperty();
+        textProp->SetColor(1.0, 0.0, 0.0);  // 红色
+        textProp->SetFontFamilyToArial();
+        textProp->SetFontSize(18);
+        textProp->SetJustificationToLeft();  // 左对齐
+        textProp->SetVerticalJustificationToBottom();  // 底部对齐
+        i->GetPositionCoordinate()->SetCoordinateSystemToNormalizedViewport();
+        i->GetPositionCoordinate()->SetValue(0.02, 0.06);
+        i->SetInput(wwwcStr  );
+    }
+
+    for (int i = 0; i < 3; i++) {
+        riw[i] = vtkSmartPointer<vtkResliceImageViewer>::New();
+        renWin[i] = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+
+        riw[i]->SetRenderWindow(renWin[i]);
+        riw[i]->GetRenderer()->AddActor(pLeftTopTextActor[i]);
+        riw[i]->GetRenderer()->AddActor(pWWWCInfo[i]);
+        // 设置文本位置
+        riw[i]->GetRenderer()->AddActor(textActor[i]);
+
 
     }
 
@@ -255,6 +346,7 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
         riw[i]->SetInputData(imageData);
         riw[i]->SetSliceOrientation(i);
         riw[i]->SetResliceModeToAxisAligned();
+
     }
 
     vtkSmartPointer<vtkCellPicker> picker = vtkSmartPointer<vtkCellPicker>::New();
@@ -267,6 +359,7 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
     vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
     this->ui->view4->setRenderWindow(renderWindow);
     this->ui->view4->renderWindow()->AddRenderer(ren);
+
     vtkRenderWindowInteractor *iren = this->ui->view4->interactor();
 
     for (int i = 0; i < 3; i++) {
@@ -281,7 +374,7 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
         color[0] /= 0.0;
         color[1] /= 0.0;
         color[2] /= 0.0;
-        riw[i]->GetRenderer()->SetBackground(color);
+        riw[i]->GetRenderer()->SetBackground(0, 0, 0);
 
         planeWidget[i]->SetTexturePlaneProperty(ipwProp);
         planeWidget[i]->TextureInterpolateOff();
@@ -292,9 +385,6 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
         planeWidget[i]->DisplayTextOn();
         planeWidget[i]->SetDefaultRenderer(ren);
 
-//        planeWidget[i]->SetWindowLevel(wc.AsDouble(), ww.AsDouble());
-
-
 
         planeWidget[i]->On();
         planeWidget[i]->InteractionOn();
@@ -302,10 +392,11 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
     }
 
     vtkSmartPointer<vtkResliceCursorCallback> cbk = vtkSmartPointer<vtkResliceCursorCallback>::New();
-
+    vtkNew<vtkNamedColors> colors;
     for (int i = 0; i < 3; i++) {
         cbk->IPW[i] = planeWidget[i];
         cbk->RCW[i] = riw[i]->GetResliceCursorWidget();
+
         riw[i]->GetResliceCursorWidget()->AddObserver(
                 vtkResliceCursorWidget::ResliceAxesChangedEvent, cbk);
         riw[i]->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::WindowLevelEvent, cbk);
@@ -324,27 +415,41 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
         // planeWidget[i]->GetColorMap()->SetInput(riw[i]->GetResliceCursorWidget()->GetResliceCursorRepresentation()->GetColorMap()->GetInput());
         planeWidget[i]->SetColorMap(
                 riw[i]->GetResliceCursorWidget()->GetResliceCursorRepresentation()->GetColorMap());
+
+
         riw[i]->Render();
+        int *size = renWin[i]->GetSize();
+        int *position = renWin[i]->GetPosition();
+
+        std::cout << "RW :w is : " << size[0] << ",h=" << size[1] << std::endl;
+        std::cout << "position :x is : " << position[0] << ",y=" << position[1] << std::endl;
+
+//
     }
+
+//    textActor[3]->SetInput("3D");
+//    textActor[3]->GetTextProperty()->SetColor(1, 1, 0);
 
     this->ui->view1->show();
     this->ui->view2->show();
     this->ui->view3->show();
-
+    std::cout << "View1 Height2 :" << ui->view1->height() << std::endl;
+    std::cout << "View2 Height2 :" << ui->view2->height() << std::endl;
+    std::cout << "View3 Height2 :" << ui->view3->height() << std::endl;
     // Set up action signals and slots
     connect(this->ui->actionExit, SIGNAL(triggered()), this, SLOT(slotExit()));
-    connect(this->ui->resliceModeCheckBox, SIGNAL(stateChanged(int)), this, SLOT(resliceMode(int)));
-    connect(this->ui->thickModeCheckBox, SIGNAL(stateChanged(int)), this, SLOT(thickMode(int)));
-    this->ui->thickModeCheckBox->setEnabled(false);
-
-    connect(this->ui->radioButton_Max, SIGNAL(pressed()), this, SLOT(SetBlendModeToMaxIP()));
-    connect(this->ui->radioButton_Min, SIGNAL(pressed()), this, SLOT(SetBlendModeToMinIP()));
-    connect(this->ui->radioButton_Mean, SIGNAL(pressed()), this, SLOT(SetBlendModeToMeanIP()));
-    this->ui->blendModeGroupBox->setEnabled(false);
-
-    connect(this->ui->resetButton, SIGNAL(pressed()), this, SLOT(ResetViews()));
-    connect(
-            this->ui->AddDistance1Button, SIGNAL(pressed()), this, SLOT(AddDistanceMeasurementToView1()));
+//    connect(this->ui->resliceModeCheckBox, SIGNAL(stateChanged(int)), this, SLOT(resliceMode(int)));
+//    connect(this->ui->thickModeCheckBox, SIGNAL(stateChanged(int)), this, SLOT(thickMode(int)));
+//    this->ui->thickModeCheckBox->setEnabled(false);
+//
+//    connect(this->ui->radioButton_Max, SIGNAL(pressed()), this, SLOT(SetBlendModeToMaxIP()));
+//    connect(this->ui->radioButton_Min, SIGNAL(pressed()), this, SLOT(SetBlendModeToMinIP()));
+//    connect(this->ui->radioButton_Mean, SIGNAL(pressed()), this, SLOT(SetBlendModeToMeanIP()));
+//    this->ui->blendModeGroupBox->setEnabled(false);
+//
+//    connect(this->ui->resetButton, SIGNAL(pressed()), this, SLOT(ResetViews()));
+//    connect(
+//            this->ui->AddDistance1Button, SIGNAL(pressed()), this, SLOT(AddDistanceMeasurementToView1()));
 };
 
 void QtVTKRenderWindows::slotExit() {
@@ -352,8 +457,8 @@ void QtVTKRenderWindows::slotExit() {
 }
 
 void QtVTKRenderWindows::resliceMode(int mode) {
-    this->ui->thickModeCheckBox->setEnabled(mode != 0);
-    this->ui->blendModeGroupBox->setEnabled(mode != 0);
+//    this->ui->thickModeCheckBox->setEnabled(mode != 0);
+//    this->ui->blendModeGroupBox->setEnabled(mode != 0);
 
     for (const auto &i: riw) {
         i->SetResliceMode(mode ? 1 : 0);

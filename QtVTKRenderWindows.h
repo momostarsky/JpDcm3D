@@ -9,6 +9,9 @@
 #include "vtkResliceImageViewerMeasurements.h"
 #include "vtkSmartPointer.h"
 #include <QMainWindow>
+#include <vtkGenericOpenGLRenderWindow.h>
+#include "vtkTextActor.h"
+#include "vtkTextProperty.h"
 
 // Forward Qt class declarations
 class Ui_QtVTKRenderWindows;
@@ -37,6 +40,11 @@ public:
 
 protected:
   vtkSmartPointer<vtkResliceImageViewer> riw[3];
+  vtkSmartPointer<vtkGenericOpenGLRenderWindow> renWin[3];
+  vtkSmartPointer<vtkTextActor> textActor[3];                                     //文本信息
+  vtkSmartPointer<vtkTextActor> pLeftTopTextActor[3];                          //文本信息
+  vtkSmartPointer<vtkTextActor> pWWWCInfo[3];                          //文本信息
+
   vtkSmartPointer<vtkImagePlaneWidget> planeWidget[3];
   vtkSmartPointer<vtkDistanceWidget> DistanceWidget[3];
   vtkSmartPointer<vtkResliceImageViewerMeasurements> ResliceMeasurements;
