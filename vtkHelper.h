@@ -9,7 +9,7 @@
 class vtkHelper {
 public:
     static void PrintRASDirection(const vtkSmartPointer<vtkImageData>& imageData);
-    static void MakeWWWCInfo(double  ww, double  wc , char* info);
+    static void MakeWWWCInfo(double  ww, double  wc , char* info,size_t maxSize);
 };
 
 

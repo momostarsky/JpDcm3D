@@ -51,6 +51,7 @@ void vtkHelper::PrintRASDirection(const vtkSmartPointer<vtkImageData> &imageData
     }
 }
 
-void vtkHelper::MakeWWWCInfo(double ww, double wc, char *info) {
-    sprintf(info, "WW/WC: %.0f/%.0f\n", ww, wc);
+void vtkHelper::MakeWWWCInfo(double ww, double wc, char *info, size_t maxSize) {
+    snprintf(info,  maxSize,"WW/WC: %.0f/%.0f\n", ww, wc);
+
 }

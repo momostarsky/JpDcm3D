@@ -296,9 +296,9 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
     }
 // WW/WC
 
-    char wwwcStr[64];
-    vtkHelper::MakeWWWCInfo(ww.AsDouble(), wc.AsDouble(), wwwcStr);
-    std::cout <<"WWWC Info :" <<  wwwcStr  << std::endl;
+    char wwwcStr[64]{0};
+    vtkHelper::MakeWWWCInfo(ww.AsDouble(), wc.AsDouble(), wwwcStr, sizeof(wwwcStr) - 1);
+    std::cout << "WWWC Info :" << wwwcStr << std::endl;
 
     for (auto &i: pWWWCInfo) {
         i = vtkSmartPointer<vtkTextActor>::New();
@@ -310,7 +310,7 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
         textProp->SetVerticalJustificationToBottom();  // 底部对齐
         i->GetPositionCoordinate()->SetCoordinateSystemToNormalizedViewport();
         i->GetPositionCoordinate()->SetValue(0.02, 0.06);
-        i->SetInput(wwwcStr  );
+        i->SetInput(wwwcStr);
     }
 
     for (int i = 0; i < 3; i++) {
