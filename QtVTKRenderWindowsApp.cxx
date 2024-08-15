@@ -17,10 +17,10 @@ int main(int argc, char **argv) {
     // QT Stuff
     QApplication app(argc, argv);
 
-//    slice1();
-//    RunApp3();
-  QtVTKRenderWindows myQtVTKRenderWindows(argc, argv);
-  myQtVTKRenderWindows.show();
+    RunApp3();
+
+//  QtVTKRenderWindows myQtVTKRenderWindows(argc, argv);
+//  myQtVTKRenderWindows.show();
 
     return QApplication::exec();
 }

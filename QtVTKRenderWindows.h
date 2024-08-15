@@ -12,11 +12,13 @@
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkResliceCursorRepresentation.h>
 #include <vtkResliceCursorLineRepresentation.h>
+#include <vtkCellPicker.h>
 #include "vtkTextActor.h"
 #include "vtkTextProperty.h"
 
 // Forward Qt class declarations
 class Ui_QtVTKRenderWindows;
+class vtkResliceCursorCallback;
 
 class QtVTKRenderWindows : public QMainWindow {
 Q_OBJECT
@@ -51,22 +53,31 @@ protected   slots:
     virtual void AddDistanceMeasurementToView(int);
 
 protected:
-    vtkSmartPointer<vtkResliceImageViewer> riw[3];
+    vtkSmartPointer<vtkResliceImageViewer> mResliceViewer[3];
     vtkSmartPointer<vtkResliceCursorWidget> rcw[3];
     vtkSmartPointer<vtkResliceCursorRepresentation>          mRep[3]  ;
     vtkSmartPointer<vtkResliceCursorLineRepresentation>      mResliceCursorRep[3]  ;
 
-    vtkSmartPointer<vtkGenericOpenGLRenderWindow> renWin[3];
+    vtkSmartPointer<vtkGenericOpenGLRenderWindow> mResliceRenderWin[3];
     vtkSmartPointer<vtkTextActor> textActor[3];                                     //文本信息
     vtkSmartPointer<vtkTextActor> pLeftTopTextActor[3];                          //文本信息
     vtkSmartPointer<vtkTextActor> pWWWCInfo[3];                          //文本信息
 
-    vtkSmartPointer<vtkImagePlaneWidget> planeWidget[3];
+    vtkSmartPointer<vtkImagePlaneWidget> mPlaneWidget[3];
     vtkSmartPointer<vtkDistanceWidget> DistanceWidget[3];
     vtkSmartPointer<vtkResliceImageViewerMeasurements> ResliceMeasurements;
+
     int dicomImageWidth;
     int dicomImageHeight;
 
+        vtkSmartPointer<vtkCellPicker>  mPlanePicker;
+
+        vtkSmartPointer<vtkGenericOpenGLRenderWindow>  mPlaneRenderWin;
+        vtkSmartPointer<vtkRenderer> mPlaneRender;
+
+        vtkSmartPointer<vtkProperty> mPlaneProperty;
+
+    vtkSmartPointer<vtkResliceCursorCallback>  mResliceCallback;
 
 private:
     // Designer form
