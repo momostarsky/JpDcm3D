@@ -123,9 +123,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="btnCrossHair">
        <property name="text">
-        <string>PushButton</string>
+        <string>crossHair</string>
        </property>
       </widget>
      </item>
@@ -147,7 +147,7 @@
   <action name="actionExit">
    <property name="icon">
     <iconset>
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>../../.designer/backup</normaloff>../../.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Exit</string>

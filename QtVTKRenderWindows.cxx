@@ -437,7 +437,12 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
     std::cout << "View2 Height2 :" << ui->view2->height() << std::endl;
     std::cout << "View3 Height2 :" << ui->view3->height() << std::endl;
     // Set up action signals and slots
-    connect(this->ui->actionExit, SIGNAL(triggered()), this, SLOT(slotExit()));
+    QMetaObject::Connection cnn = connect(this->ui->actionExit, SIGNAL(triggered()), this, SLOT(slotExit()));
+    if(cnn ){
+         std::cout << "Connect not successful!" << std::endl;
+    }
+
+    connect(this->ui->btnCrossHair, SIGNAL(clicked(bool )), this, SLOT(slotCrossHair(bool)));
 //    connect(this->ui->resliceModeCheckBox, SIGNAL(stateChanged(int)), this, SLOT(resliceMode(int)));
 //    connect(this->ui->thickModeCheckBox, SIGNAL(stateChanged(int)), this, SLOT(thickMode(int)));
 //    this->ui->thickModeCheckBox->setEnabled(false);
@@ -560,4 +565,12 @@ void QtVTKRenderWindows::AddDistanceMeasurementToView(int i) {
 
     this->DistanceWidget[i]->CreateDefaultRepresentation();
     this->DistanceWidget[i]->EnabledOn();
+}
+
+void QtVTKRenderWindows::slotCrossHair(bool mode) {
+    std::cout  <<"CrossHaire" <<std::endl;
+    resliceMode(1);
+    thickMode(1);
+    SetBlendModeToMeanIP();
+
 }

@@ -22,11 +22,13 @@ set(SRCS
   QtVTKRenderWindowsApp.cxx
   QtVTKRenderWindows.cxx  vtkHelper.cpp)
 
-set(HEADERS
-  QtVTKRenderWindows.h    vtkHelper.h)
+set(HEADERS   App3.h
+  QtVTKRenderWindows.h    vtkHelper.h
+        MprD1.h)
 
 set(UIS
-  QtVTKRenderWindows.ui )
+  QtVTKRenderWindows.ui
+        Jp3DInteractorStyleImage.h)
 
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
