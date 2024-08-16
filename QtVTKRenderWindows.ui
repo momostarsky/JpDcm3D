@@ -123,6 +123,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="btnResetViews">
+       <property name="text">
+        <string>resetViews</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btnCrossHair">
        <property name="text">
         <string>crossHair</string>

@@ -13,11 +13,13 @@
 #include <vtkResliceCursorRepresentation.h>
 #include <vtkResliceCursorLineRepresentation.h>
 #include <vtkCellPicker.h>
+#include <vtkResliceCursorThickLineRepresentation.h>
 #include "vtkTextActor.h"
 #include "vtkTextProperty.h"
 
 // Forward Qt class declarations
 class Ui_QtVTKRenderWindows;
+
 class vtkResliceCursorCallback;
 
 class QtVTKRenderWindows : public QMainWindow {
@@ -29,8 +31,10 @@ public:
     ~QtVTKRenderWindows() override = default;
 
 protected   slots:
+
     virtual void slotExit();
-    virtual void slotCrossHair(bool );
+
+    virtual void slotCrossHair(bool);
 
     virtual void resliceMode(int);
 
@@ -54,11 +58,12 @@ protected   slots:
 
 protected:
     vtkSmartPointer<vtkResliceImageViewer> mResliceViewer[3];
-    vtkSmartPointer<vtkResliceCursorWidget> rcw[3];
-    vtkSmartPointer<vtkResliceCursorRepresentation>          mRep[3]  ;
-    vtkSmartPointer<vtkResliceCursorLineRepresentation>      mResliceCursorRep[3]  ;
+    vtkSmartPointer<vtkResliceCursorWidget> mResliceCursorWidget[3];
+    vtkSmartPointer<vtkResliceCursorRepresentation> mRep[3];
+
 
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> mResliceRenderWin[3];
+
     vtkSmartPointer<vtkTextActor> textActor[3];                                     //文本信息
     vtkSmartPointer<vtkTextActor> pLeftTopTextActor[3];                          //文本信息
     vtkSmartPointer<vtkTextActor> pWWWCInfo[3];                          //文本信息
@@ -70,14 +75,14 @@ protected:
     int dicomImageWidth;
     int dicomImageHeight;
 
-        vtkSmartPointer<vtkCellPicker>  mPlanePicker;
+    vtkSmartPointer<vtkCellPicker> mPlanePicker;
 
-        vtkSmartPointer<vtkGenericOpenGLRenderWindow>  mPlaneRenderWin;
-        vtkSmartPointer<vtkRenderer> mPlaneRender;
+    vtkSmartPointer<vtkGenericOpenGLRenderWindow> mPlaneRenderWin;
+    vtkSmartPointer<vtkRenderer> mPlaneRender;
 
-        vtkSmartPointer<vtkProperty> mPlaneProperty;
+    vtkSmartPointer<vtkProperty> mPlaneProperty;
 
-    vtkSmartPointer<vtkResliceCursorCallback>  mResliceCallback;
+    vtkSmartPointer<vtkResliceCursorCallback> mResliceCallback;
 
 private:
     // Designer form

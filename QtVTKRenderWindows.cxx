@@ -396,6 +396,13 @@ void QtVTKRenderWindows::resliceMode(int mode) {
 void QtVTKRenderWindows::thickMode(int mode) {
     for (const auto &i: mResliceViewer) {
         i->SetThickMode(mode ? 1 : 0);
+        if(i->GetThickMode()){
+           auto rep = vtkResliceCursorThickLineRepresentation::SafeDownCast(   i->GetResliceCursorWidget()->GetResliceCursorRepresentation());
+           rep->GetResliceCursorActor()->GetCenterlineProperty(0)->SetRepresentationToWireframe();
+           rep->GetResliceCursorActor()->GetCenterlineProperty(1)->SetRepresentationToWireframe();
+           rep->GetResliceCursorActor()->GetCenterlineProperty(2)->SetRepresentationToWireframe();
+        }
+
         i->Render();
     }
 }
@@ -494,7 +501,7 @@ void QtVTKRenderWindows::AddDistanceMeasurementToView(int i) {
 
 void QtVTKRenderWindows::slotCrossHair(bool mode) {
     std::cout << "CrossHaire" << std::endl;
-    // resliceMode(1);
+    resliceMode(1);
     thickMode(1);
     SetBlendModeToMeanIP();
 
