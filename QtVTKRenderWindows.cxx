@@ -32,12 +32,13 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include "vtkStringArray.h"
-#include "vtkDICOMMetaData.h"
+#include <vtkDICOMImageReader.h>
 #include "vtkDICOMMetaDataAdapter.h"
 #include "vtkHelper.h"
 #include <vtkDICOMReader.h>
 #include <vtkDICOMDirectory.h>
 #include <vtkDICOMItem.h>
+#include <vtkDICOMMetaData.h>
 #include <vtkMatrix3x3.h>
 #include <vtkImageFlip.h>
 #include <vtkNamedColors.h>
@@ -119,21 +120,6 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
     this->ui = new Ui_QtVTKRenderWindows;
     this->ui->setupUi(this);
 
-//
-//    vtkStringArray *stringArray = reader->GetFileNames();
-//    // 获取数组的大小
-//    auto  size = stringArray->GetNumberOfValues();
-//     std::cout << " siz is :" << size << std::endl;
-//
-//    // 遍历数组
-//    for (int i = 0; i < size; ++i) {
-//        std::string value = stringArray->GetValue(i);
-//        std::cout << "Value at index " << i << ": " << value << std::endl;
-//    }
-
-    //
-    //https://dgobbi.github.io/vtk-dicom/doc/api/directory.html
-    //
     vtkNew<vtkDICOMDirectory> dicomdir;
     dicomdir->SetDirectoryName("/home/dhz/v4486");
     dicomdir->RequirePixelDataOff();
@@ -141,11 +127,8 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
 
     int n = dicomdir->GetNumberOfSeries();
     if (n == 0) {
-
         std::cerr << "No DICOM images in directory!" << std::endl;
         return;
-
-
     }
 
     int firstStudy = 0;
@@ -171,8 +154,7 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
     xreader->SetDataByteOrderToLittleEndian();
     xreader->SetFileNames(dicomdir->GetFileNamesForSeries(0));
     xreader->Update();
-    vtkSmartPointer<vtkDICOMMetaData> meta = xreader->GetMetaData();
-    meta->PrintSelf(std::cout, vtkIndent());
+    auto meta = xreader->GetMetaData();
 
     std::cout << "===========================" << std::endl;
     auto wc = meta->Get(DC::WindowCenter);
@@ -192,11 +174,6 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
     vtkSmartPointer<vtkDICOMImageReader> reader = vtkSmartPointer<vtkDICOMImageReader>::New();
     reader->SetDataByteOrderToLittleEndian();
     reader->SetDirectoryName("/home/dhz/v4486");
-
-
-//    vtkSmartPointer<vtkImageFlip> flip = vtkSmartPointer<vtkImageFlip>::New();
-//    flip->SetInputConnection(reader->GetOutputPort());
-//    flip->SetFilteredAxes(1);
     vtkSmartPointer<vtkImageReslice> flip = vtkSmartPointer<vtkImageReslice>::New();
     flip->SetInputConnection(reader->GetOutputPort());
     flip->SetResliceAxesDirectionCosines(
@@ -206,30 +183,32 @@ QtVTKRenderWindows::QtVTKRenderWindows(int vtkNotUsed(argc), char *argv[]) {
 
     flip->Update();
     int imageDims[3];
+
+
     vtkImageData *imageData = flip->GetOutput();
 
     imageData->GetDimensions(imageDims);
     {
-        float *arr = reader->GetImagePositionPatient();
-        std::cout << "ImagePositionPatient: " << arr[0] << ", " << arr[1] << ", " << arr[2] << ")" << std::endl;
-        float *arr2 = reader->GetImageOrientationPatient();
-        std::cout << "GetImageOrientationPatient:ROW " << arr2[0] << ", " << arr2[1] << ", " << arr2[2] << ")"
-                  << std::endl;
-        std::cout << "GetImageOrientationPatient:COL  " << arr2[3] << ", " << arr2[4] << ", " << arr2[5] << ")"
-                  << std::endl;
-        double origin[3] = {0.0, 0.0, 0.0};
-        double spacing[3] = {1.0, 1.0, 1.0};
-
-        imageData->GetOrigin(origin);
-        imageData->GetSpacing(spacing);
-        vtkMatrix3x3 *imageDirection = imageData->GetDirectionMatrix();
-        int extentInfo[6];
-        imageData->GetExtent(extentInfo);
-
-        std::cout << "Origin: (" << origin[0] << ", " << origin[1] << ", " << origin[2] << ")" << std::endl;
-        std::cout << "Spacing: (" << spacing[0] << ", " << spacing[1] << ", " << spacing[2] << ")" << std::endl;
-        std::cout << "Extent: (" << extentInfo[0] << ", " << extentInfo[1] << ", " << extentInfo[2] << ","
-                  << extentInfo[3] << ", " << extentInfo[4] << ", " << extentInfo[5] << ")" << std::endl;
+//        float *arr = reader->GetImagePositionPatient();
+//        std::cout << "ImagePositionPatient: " << arr[0] << ", " << arr[1] << ", " << arr[2] << ")" << std::endl;
+//        float *arr2 = reader->GetImageOrientationPatient();
+//        std::cout << "GetImageOrientationPatient:ROW " << arr2[0] << ", " << arr2[1] << ", " << arr2[2] << ")"
+//                  << std::endl;
+//        std::cout << "GetImageOrientationPatient:COL  " << arr2[3] << ", " << arr2[4] << ", " << arr2[5] << ")"
+//                  << std::endl;
+//        double origin[3] = {0.0, 0.0, 0.0};
+//        double spacing[3] = {1.0, 1.0, 1.0};
+//
+//        imageData->GetOrigin(origin);
+//        imageData->GetSpacing(spacing);
+//        vtkMatrix3x3 *imageDirection = imageData->GetDirectionMatrix();
+//        int extentInfo[6];
+//        imageData->GetExtent(extentInfo);
+//
+//        std::cout << "Origin: (" << origin[0] << ", " << origin[1] << ", " << origin[2] << ")" << std::endl;
+//        std::cout << "Spacing: (" << spacing[0] << ", " << spacing[1] << ", " << spacing[2] << ")" << std::endl;
+//        std::cout << "Extent: (" << extentInfo[0] << ", " << extentInfo[1] << ", " << extentInfo[2] << ","
+//                  << extentInfo[3] << ", " << extentInfo[4] << ", " << extentInfo[5] << ")" << std::endl;
 
     }
     {
@@ -402,6 +381,7 @@ void QtVTKRenderWindows::thickMode(int mode) {
            rep->GetResliceCursorActor()->GetCenterlineProperty(1)->SetRepresentationToWireframe();
            rep->GetResliceCursorActor()->GetCenterlineProperty(2)->SetRepresentationToWireframe();
         }
+        i->GetResliceCursor()->SetThickness(50,50,50);
 
         i->Render();
     }

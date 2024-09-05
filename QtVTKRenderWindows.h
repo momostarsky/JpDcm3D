@@ -62,7 +62,7 @@ protected:
     vtkSmartPointer<vtkResliceCursorRepresentation> mRep[3];
 
 
-    vtkSmartPointer<vtkGenericOpenGLRenderWindow> mResliceRenderWin[3];
+    vtkSmartPointer<vtkRenderWindow> mResliceRenderWin[3];
 
     vtkSmartPointer<vtkTextActor> textActor[3];                                     //文本信息
     vtkSmartPointer<vtkTextActor> pLeftTopTextActor[3];                          //文本信息
@@ -72,12 +72,12 @@ protected:
     vtkSmartPointer<vtkDistanceWidget> DistanceWidget[3];
     vtkSmartPointer<vtkResliceImageViewerMeasurements> ResliceMeasurements;
 
-    int dicomImageWidth;
-    int dicomImageHeight;
+    int dicomImageWidth{0};
+    int dicomImageHeight{0};
 
     vtkSmartPointer<vtkCellPicker> mPlanePicker;
 
-    vtkSmartPointer<vtkGenericOpenGLRenderWindow> mPlaneRenderWin;
+    vtkSmartPointer<vtkRenderWindow> mPlaneRenderWin;
     vtkSmartPointer<vtkRenderer> mPlaneRender;
 
     vtkSmartPointer<vtkProperty> mPlaneProperty;
